@@ -30,7 +30,7 @@ class srvPPE(object):
             try:
                 msg = self.client.recv_bytes()
                 self.client.send(eval(msg))       # WARNING - this metod sends data as pickle module serialized object, must be pickle deserialized on client
-                #self.client.send_bytes(str(eval(msg)).encode())  # u can use more safe method, with no serialisation
+                #self.client.send_bytes(str(eval(msg).encode())  # more safe method, without serialisation
                 #exec compile(msg,'','exec') in sys.modules['__main__'].__dict__  # 
                 #self.client.send('compiled')
             except EOFError as err: break
@@ -54,7 +54,7 @@ class myIO():
 dataEx = srvPPE(r'\\.\pipe\dataEx', pw='xxxx'.encode(), mode=1 )
 edbg = srvPPE(r'\\.\pipe\edbg', pw='xxxx'.encode(), mode=2 )
 
-sys.stdIO = sys.stdout
+#sys.stdIO = sys.stdout
 sys.stdIO = sys.stderr
 sys.stderr = sys.stdout = myIO()
     
