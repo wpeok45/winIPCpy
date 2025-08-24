@@ -5,19 +5,19 @@ import time
 import threading
 from multiprocessing import connection
 
-class srvPPE(object):
+class SrvPipe(object):
     def __init__(self, addr, pw, mode=1):
-        self.lstnThread = threading.Thread(target = self.conStart, args=(addr, pw, mode,))
+        self.lstnThread = threading.Thread(target = self.con_start, args=(addr, pw, mode,))
         self.lstnThread.daemon = True
         self.lstnThread.start()
         self.client = None
   
-    def conStart(self, addr, pw, mode):
+    def con_start(self, addr, pw, mode):
         lstnr = connection.Listener(addr, family='AF_PIPE', authkey=pw.encode())
         while 1:
             try:
                 self.client = lstnr.accept()
-                if mode == 1: thrd = threading.Thread(target = self.clientLoop, args=(self.client,))
+                if mode == 1: thrd = threading.Thread(target = self.client_loop, args=(self.client,))
                 if mode != 2:
                     thrd.daemon = True
                     thrd.start()
@@ -25,7 +25,7 @@ class srvPPE(object):
                 import traceback
                 print(traceback.format_exc())
 
-    def clientLoop(self, client):
+    def client_loop(self, client):
         while not self.client.closed:
             try:
                 msg = self.client.recv_bytes()
@@ -38,7 +38,7 @@ class srvPPE(object):
                 import traceback
                 self.client.send(traceback.format_exc())
                 
-class myIO():
+class MyIO():
     def write(self, message):
         sys.stdIO.write(message)
         
@@ -51,11 +51,11 @@ class myIO():
     def flush(self): sys.stdIO.flush()
     def close(self): pass
 
-dataEx = srvPPE(r'\\.\pipe\dataEx', pw='xxxx'.encode(), mode=1 )
-edbg = srvPPE(r'\\.\pipe\edbg', pw='xxxx'.encode(), mode=2 )
+dataEx = SrvPipe(r'\\.\pipe\dataEx', pw='xxxx'.encode(), mode=1 )
+edbg = SrvPipe(r'\\.\pipe\edbg', pw='xxxx'.encode(), mode=2 )
 
-#sys.stdIO = sys.stdout
+
 sys.stdIO = sys.stderr
-sys.stderr = sys.stdout = myIO()
+sys.stderr = sys.stdout = MyIO()
     
 
